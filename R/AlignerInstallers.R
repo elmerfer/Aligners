@@ -1,9 +1,12 @@
 
-#' InstallSTAR
-#' This function will install and configure the use fo the STAR sofware version 2.7.6a compatible with the Arriba software
+#' InstallAligners
+#' This function will install and configure the use fo the STAR sofware version 2.7.6a compatible with the Arriba software, and the Rsubread bioconductor package
 #' @export
 #' it will build the a directory based on \code{\link[GenomeDB]{SetDbdirectory}} function
-InstallSTAR <- function(){
+InstallAligners <- function(){
+  if(require(GenomeDB)==FALSE){
+    stop("Pls you should install GenomeDB package")
+  }
   software <- GenomeDB:::.OpenConfigFile()
   if(length(software)<1){
     stop("\nPlease install GenomeDB package See https://github.com/elmerfer/GenomeDB")
@@ -15,6 +18,13 @@ InstallSTAR <- function(){
     stopifnot(dir.create(software$Software$STAR$main))
     software$Software$Rsubread$main <-  file.path(software$Software$main,"Rsubread")  #to install index files
     stopifnot(dir.create(software$Software$Rsubread$main))
+  }
+  if(require("Rsubread")==FALSE){
+    message("\nInstalling Rsubread")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+
+    BiocManager::install("Rsubread")
   }
 
   cat("\nDownloading the STAR aligner software version 2.7.6a compatible with Arriba version 2.0.1")
@@ -42,8 +52,8 @@ InstallSTAR <- function(){
   }
   system2(command = software$Software$STAR$command)
 
-  software$Software$STAR$alignmentPrefix <- "_STAR_Aligned.bam"
-  software$Software$STAR$alignmentPrefixSorted <- "_STAR_AlignedSortedByCoordinates.bam"
+  software$Software$STAR$alignmentPrefix <- "_STAR_Aligned_"
+  software$Software$STAR$alignmentPrefixSorted <- "_STAR_AlignedSortedByCoordinates_"
 
   GenomeDB:::.OpenConfigFile(config = software)
 }
