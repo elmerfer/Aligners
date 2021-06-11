@@ -16,23 +16,29 @@ UpdateSTARindex <- function(){
 
     versiones <- basename(software$GenomesDB[[sp]]$version)
     for(vv in versiones){
-      ##check if the genome version exists
-      if(dir.exists(file.path(software$Software$STAR$main,versiones))==FALSE){
-        if(dir.create(file.path(software$Software$STAR$main,versiones))==FALSE){
-          stop("error creating index directory")
-        }
+      if(!(vv %in% names(software$Software$STAR$main))){
+        ##check if the genome version exists
+        if(dir.exists(file.path(software$Software$STAR$main,versiones))==FALSE){
+          if(dir.create(file.path(software$Software$STAR$main,versiones))==FALSE){
+            stop("error creating index directory")
+          }
+          ##se creó el directorio
+          software$Software$STAR$main[[versiones]] <- file.path(software$Software$STAR$main,versiones)
+          fasta.gtf.files <- GenomeDB::GetGenome(sp, versiones)
+          genome.fasta <- file.path(software$GenomesDB[[sp]],paste0(versiones,"/"))
+          system2(command = software$Software$STAR$command,
+                  args = c("--runMode genomeGenerate",
+                           paste0("--genomeDir ",software$Software$STAR$main[[versiones]]),
+                           paste0("--genomeFastaFiles ",fasta.gtf.files$fasta),
+                           paste0("--sjdbGTFfile ",fasta.gtf.files$gtf),
+                           paste0("--runThreadN ",thr),
+                           "--sjdbOverhang 250") )  
       }
-      ##se creo el directorio
-      software$Software$STAR$main[[versiones]] <- file.path(software$Software$STAR$main,versiones)
-      fasta.gtf.files <- GenomeDB::GetGenome(sp, versiones)
-      genome.fasta <- file.path(software$GenomesDB[[sp]],paste0(versiones,"/"))
-      system2(command = software$Software$STAR$command,
-              args = c("--runMode genomeGenerate",
-                       paste0("--genomeDir ",software$Software$STAR$main[[versiones]]),
-                       paste0("--genomeFastaFiles ",fasta.gtf.files$fasta),
-                       paste0("--sjdbGTFfile ",fasta.gtf.files$gtf),
-                       paste0("--runThreadN ",thr),
-                       "--sjdbOverhang 250") )
+      
+      }else{
+        message(paste0("\nThe species:", sp," and version: ",vv, "has already being created"))
+      }
+      
     }
   }
   GenomeDB:::.OpenConfigFile(software)
