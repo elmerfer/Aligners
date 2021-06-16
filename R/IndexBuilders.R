@@ -36,7 +36,7 @@ UpdateSTARindex <- function(){
       }
       
       }else{
-        message(paste0("\nThe species:", sp," and version: ",vv, "has already being created"))
+        message(paste0("\nThe species:", sp," and version: ",vv, "has already being created for STAR aligner"))
       }
       
     }
@@ -62,17 +62,23 @@ UpdateRsubreadindex <- function(){
   for(sp in species){
     versiones <- names(software$GenomesDB[[sp]]$version)
     for(vv in versiones){
-      if( dir.exists(file.path(software$Software$Rsubread$main,versiones))==FALSE){
-        if(dir.create(file.path(software$Software$Rsubread$main,versiones))==FALSE){
-          stop("error creating Rsubread index directory")
+      if(!(vv %in% names(software$Software$Rsubread$main))){
+        ##no esta aun el indice
+        if( dir.exists(file.path(software$Software$Rsubread$main,versiones))==FALSE){
+          if(dir.create(file.path(software$Software$Rsubread$main,versiones))==FALSE){
+            stop("error creating Rsubread index directory")
+          }
         }
+        ##se creo el directorio
+        software$Software$Rsubread$main[[versiones]] <- file.path(file.path(software$Software$Rsubread$main,versiones),versiones)
+        fasta.gtf.files <- GenomeDB::GetGenome(sp, versiones)
+        
+        Rsubread::buildindex(basename = software$Software$Rsubread$main[[versiones]],
+                             reference = fasta.gtf.files$fasta)
+      }else{
+        message(paste0("\nThe species:", sp," and version: ",vv, "has already being created for Rsubread"))
       }
-      ##se creo el directorio
-      software$Software$Rsubread$main[[versiones]] <- file.path(file.path(software$Software$Rsubread$main,versiones),versiones)
-      fasta.gtf.files <- GenomeDB::GetGenome(sp, versiones)
-
-      Rsubread::buildindex(basename = software$Software$Rsubread$main[[versiones]],
-                            reference = fasta.gtf.files$fasta)
+      
 
     }
   }
