@@ -64,13 +64,16 @@ UpdateRsubreadindex <- function(){
     for(vv in versiones){
       if(!(vv %in% names(software$Software$Rsubread$main))){
         ##no esta aun el indice
-        if( dir.exists(file.path(software$Software$Rsubread$main,versiones))==FALSE){
-          if(dir.create(file.path(software$Software$Rsubread$main,versiones))==FALSE){
+        if( dir.exists(file.path(software$Software$Rsubread$main[1],versiones))==FALSE){
+          if(dir.create(file.path(software$Software$Rsubread$main[1],versiones))==FALSE){
             stop("error creating Rsubread index directory")
           }
         }
         ##se creo el directorio
-        software$Software$Rsubread$main[[versiones]] <- file.path(file.path(software$Software$Rsubread$main,versiones),versiones)
+        software$Software$Rsubread$main <- c(software$Software$Rsubread$main,
+                                             file.path(file.path(software$Software$Rsubread$main[1],versiones),versiones))
+        names(software$Software$Rsubread$main)[length(software$Software$Rsubread$main)] <- versiones
+        
         fasta.gtf.files <- GenomeDB::GetGenome(sp, versiones)
         
         Rsubread::buildindex(basename = software$Software$Rsubread$main[[versiones]],
