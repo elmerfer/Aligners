@@ -16,16 +16,20 @@ RunSTAR <- function(sbjFile, species, version, twoPass = c("None","Basic"), nThr
   if(is.null(software$Software$STAR$main)){
     stop("STAR not installed")
   }
-  if(all(stringr::str_detect(available.species,species))==FALSE ){
+  if(all(stringr::str_detect(available.species,species)==FALSE) ){
     stop(paste0("\n",species, " NOT in Database\nAvailable specias are :", available.species))
   }
 
   twoPass <- match.arg(twoPass[1], choices = c("None","Basic"))
   file1 <- sbjFile
-  if(stringr::str_detect(file1, ".fq.gz")){
-    file2 <- stringr::str_replace(file1,"_R1.fq.gz","_R2.fq.gz")  
-  }else{##asumo que es fastq
-    file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")  
+  if(stringr::str_detect(file1, "_R1.fastq")){
+    file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")
+  }else{
+    if(stringr::str_detect(file1, "_1.fastq")){
+      file2 <- stringr::str_replace(file1,"_1.fastq","_2.fastq")
+    }else{
+      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_1.fastq/.gz")
+    }
   }
   
   
@@ -34,8 +38,8 @@ RunSTAR <- function(sbjFile, species, version, twoPass = c("None","Basic"), nThr
     stop("ERROR some files not found")
   }
 
-  if(all(stringr::str_detect(names(software$GenomesDB)[-1], species))==FALSE){
-    stop(paste0("\nThe ", species, "NOT found"))
+  if(all(c(version %in% names(software$GenomesDB[[species]]$version))==FALSE)){
+    stop(paste0("\nThe ", version, "NOT found"))
   }
 
 
@@ -103,25 +107,31 @@ RunSubjunct <- function(sbjFile, species, version, nThreads){
   software <- GenomeDB:::.OpenConfigFile()
   available.species <- names(software$GenomesDB)[-1]
   
-  if(all(stringr::str_detect(available.species,species))==FALSE ){
+  if(all(stringr::str_detect(available.species,species)==FALSE) ){
     stop(paste0("\n",species, " NOT in Database\nAvailable specias are :", available.species))
   }
   
   file1 <- sbjFile
-  file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")
+  if(stringr::str_detect(file1, "_R1.fastq")){
+    file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")
+  }else{
+    if(stringr::str_detect(file1, "_1.fastq")){
+      file2 <- stringr::str_replace(file1,"_1.fastq","_2.fastq")
+    }else{
+      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_1.fastq/.gz")
+    }
+  }
   
   cat(paste0("\nSubject files\n",file1,"\n",file2,"\n"))
   if(!all(file.exists(file1,file2))){
     stop("ERROR some files not found")
   }
   
-  if(all(stringr::str_detect(names(software$GenomesDB)[-1], species))==FALSE){
-    stop(paste0("\nThe ", species, "NOT found"))
+  if(all(c(version %in% names(software$GenomesDB[[species]]$version))==FALSE)){
+    stop(paste0("\nThe ", version, "NOT found"))
   }
   
-  
-  out.file.prefix <- file.path(dirname(file1),paste0(basename(dirname(file1)),software$Software$STAR$alignmentPrefix))
-  out.file <- paste0(out.file.prefix,"Aligned.out.bam")
+ 
   if(missing(nThreads)){
     nThreads <- max(1,parallel::detectCores()-2)
   }
