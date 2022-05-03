@@ -14,7 +14,7 @@ InstallAligners <- function(){
   if(is.null(software$Software$main)){
     software$Software$main <- file.path(software$main,"Softwares")
     stopifnot(dir.create(software$Software$main))
-    software$Software$STAR$main <-  file.path(software$Software$main,"STAR")#to install softwar versions and index files
+    software$Software$STAR$main <-  file.path(software$Software$main,"STAR")#to install software versions and index files
     stopifnot(dir.create(software$Software$STAR$main))
     software$Software$Rsubread$main <-  file.path(software$Software$main,"Rsubread")  #to install index files
     stopifnot(dir.create(software$Software$Rsubread$main))
