@@ -74,5 +74,5 @@ RunTrimgalore <- function(fileR1){
   ot.size1 <-file.info(paste0(unlist(stringr::str_split(fileR1,".f"))[1],"_val_1.fq.gz"))$size
   of.size2 <-file.info(fileR2)$size
   ot.size2 <-file.info(paste0(unlist(stringr::str_split(fileR2,".f"))[1],"_val_2.fq.gz"))$size
-  return(c(Time= etime, osize1=of.size1,osize2=of.size1,tsize1=ot.size1,tsize2=ot.size2))
+  return(c(file=basename(fileR1),Time= etime, osize1=of.size1,osize2=of.size1,tsize1=ot.size1,tsize2=ot.size2))
 }
