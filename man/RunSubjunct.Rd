@@ -16,6 +16,10 @@ RunSubjunct(sbjFile, species, version, nThreads)
 
 \item{nThreads}{integer, number of CPUs to be used}
 }
+\value{
+the file name of the resulted bam file with an attribute "assemblyVersion" that shows the reference-annotation verision 
+see \code{\link[GenomeDB]{GetGenomesInDB}}
+}
 \description{
 RunSubjunct
 a wrapper to the \code{\link[Rsubread]{subjuct}} function

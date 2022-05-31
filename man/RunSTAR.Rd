@@ -13,9 +13,17 @@ RunSTAR(sbjFile, species, version, twoPass = c("None", "Basic"), nThreads)
 
 \item{version}{the code indicating the genome+annotation pair}
 
-\item{twoPass}{"None" or "Basic"}
+\item{twoPass}{"None" or "Basic". If set to "Basic", Annotated junctions will be included in both the 1st and 2nd passes. To run STAR 2-pass mapping for
+each sample separately. STAR will perform the 1st pass mapping,
+then it will automatically extract junctions, insert them into the genome index, and, finally, re-map
+all reads in the 2nd mapping pass. This option can be used with annotations, which can be included
+either at the run-time or at the genome generation step.}
 
 \item{nThreads}{integer, number of CPUs to be used}
+}
+\value{
+the file name of the resulted bam file with an attribute "assemblyVersion" that shows the reference-annotation verision 
+see \code{\link[GenomeDB]{GetGenomesInDB}}
 }
 \description{
 RunSTAR
