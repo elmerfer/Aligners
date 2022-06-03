@@ -72,6 +72,12 @@ RunTrimgalore <- function(fileR1, outdir, replace=FALSE){
   software <- GenomeDB:::.OpenConfigFile()
   fileR2 <- stringr::str_replace_all(fileR1, "_R1.","_R2.")
   fileR2 <- stringr::str_replace_all(fileR1, "_1.","_2.")
+  
+  if(stringr::str_detect(fileR1, "_R1.")){
+    basename <- unlist(stringr::str_split(basename(fileR1),"_R1."))[1]
+  }else{
+    basename <- unlist(stringr::str_split(basename(fileR1),"_1."))[1]
+  }
   if(file.exists(software$Software$TrimGalore$command)==FALSE){
     stop("Trimgalore is not installed, please see InstallTtrimgalore()")
   }
@@ -85,32 +91,13 @@ RunTrimgalore <- function(fileR1, outdir, replace=FALSE){
                   gziped,
                   outdir,
                   fileR1,
-                  fileR2))
+                  fileR2,
+                  paste0("--basename ",basename)))
   
   etime <- as.numeric(Sys.time()-t1,units="hours")
-  
+  ##calculo el tamaño de los originales
   of.size1 <-file.info(fileR1)$size
   of.size2 <-file.info(fileR2)$size
-  if(gziped=="--gzip"){
-    ofile <- paste0(unlist(stringr::str_split(basename(fileR1),".f"))[1],"_val_1.fq.gz")
-    file.rename(ofile,stringr::str_replace_all(ofile,"_1_|_R1_",""))
-    ofile <-stringr::str_replace_all(ofile,"_1_|_R1_","")
-    ot.size1 <-file.info(file.path(outdir,ofile))$size  
-    of2 <- paste0(unlist(stringr::str_split(basename(fileR2),".f"))[1],"_val_2.fq.gz")
-    file.rename(of2,stringr::str_replace_all(of2,"_2_|_R2_",""))
-    ot.size2 <-file.info(file.path(outdir,of2))$size
-  }else{
-    ofile <- paste0(unlist(stringr::str_split(basename(fileR1),".f"))[1],"_val_1.fastq")
-    file.rename(ofile,stringr::str_replace_all(ofile,"_1_|_R1_",""))
-    ofile <-stringr::str_replace_all(ofile,"_1_|_R1_","")
-    ot.size1 <-file.info(file.path(outdir,paste0(unlist(stringr::str_split(basename(fileR1),".f"))[1],"_val_1.fastq")))$size  
-    of2 <- paste0(unlist(stringr::str_split(basename(fileR2),".f"))[1],"_val_2.fastq")
-    file.rename(of2,stringr::str_replace_all(of2,"_2_|_R2_",""))
-    ot.size2 <-file.info(file.path(outdir,of2))$size    
-  }
   
-  
-  
-  
-  return(c(ofile=fileR1,tfile = ofile ,Time= etime, osize1=of.size1,osize2=of.size1,tsize1=ot.size1,tsize2=ot.size2))
+    return(c(ofile=fileR1,tfile = file.path(outdir,ofile) ,Time= etime, osize1=of.size1,osize2=of.size1,tsize1=ot.size1,tsize2=ot.size2))
 }
