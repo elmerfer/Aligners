@@ -83,13 +83,13 @@ RunTrimgalore <- function(fileR1, outdir, replace=FALSE){
   }
   
   gziped <- ifelse(stringr::str_detect(fileR1,".gz"),"--gzip","--dont_gzip")
-  outdir <- ifelse(missing(outdir), paste0("--output_dir ",dirname(fileR1)),paste0("--output_dir ",file.path(dirname(fileR1),outdir)))
+  # outdir <- ifelse(missing(outdir), paste0("--output_dir ",dirname(fileR1)),paste0("--output_dir ",file.path(dirname(fileR1),outdir)))
   
   t1<- Sys.time()
   system2(command = software$Software$TrimGalore$command,
           args =c("--paired",
                   gziped,
-                  outdir,
+                  ifelse(missing(outdir), paste0("--output_dir ",dirname(fileR1)),paste0("--output_dir ",file.path(dirname(fileR1),outdir))),
                   fileR1,
                   fileR2,
                   paste0("--basename ",basename)))
@@ -98,6 +98,15 @@ RunTrimgalore <- function(fileR1, outdir, replace=FALSE){
   ##calculo el tamaño de los originales
   of.size1 <-file.info(fileR1)$size
   of.size2 <-file.info(fileR2)$size
-  
-    return(c(ofile=fileR1,tfile = file.path(outdir,ofile) ,Time= etime, osize1=of.size1,osize2=of.size1,tsize1=ot.size1,tsize2=ot.size2))
+  if(missing(outdir)){
+    outdir <- ""
+  }
+  if(gziped == "--gzip"){
+    ofile <- file.path(outdir,basename,"val_1.fq.gz")
+  }else{
+    ofile <- file.path(outdir,basename,"val_1.fq")
+  }
+  ot.size1 <- file.info(ofile)$size
+  ot.size2 <- file.info(stringr::str_replace_all(ofile,"val_1.","val_2."))$size
+    return(c(ifile=fileR1,tfile = ofile ,Time= etime, isize1=of.size1,isize2=of.size2,tsize1=ot.size1,tsize2=ot.size2))
 }
