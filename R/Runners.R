@@ -28,13 +28,13 @@ RunSTAR <- function(sbjFile, species, version, twoPass = c("None","Basic"), nThr
 
   twoPass <- match.arg(twoPass[1], choices = c("None","Basic"))
   file1 <- sbjFile
-  if(stringr::str_detect(file1, "_R1.fastq")){
-    file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")
+  if(stringr::str_detect(file1, "_R1.fastq|_R1.fq")){
+    file2 <- stringr::str_replace(file1,"_R1.f","_R2.f")
   }else{
-    if(stringr::str_detect(file1, "_1.fastq")){
-      file2 <- stringr::str_replace(file1,"_1.fastq","_2.fastq")
+    if(stringr::str_detect(file1, "_1.fastq|_1.fq")){
+      file2 <- stringr::str_replace(file1,"_1.f","_2.f")
     }else{
-      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_1.fastq/.gz")
+      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_1.fastq/.gz or sbj_R1.fq/.gz or sbj_1.fq/.gz")
     }
   }
   
