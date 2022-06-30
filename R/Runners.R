@@ -120,17 +120,17 @@ RunSubjunct <- function(sbjFile, species, version, nThreads){
   }
   
   file1 <- sbjFile
-  if(stringr::str_detect(file1, "_R1.fastq")){
-    file2 <- stringr::str_replace(file1,"_R1.fastq","_R2.fastq")
-    outf <- stringr::str_remove_all(file1,"_R1.fastq|_R1.fastq.gz")
+  if(stringr::str_detect(file1, "_R1.fastq|_R1.fq")){
+    file2 <- stringr::str_replace(file1,"_R1.f","_R2.f")
+    outf <- stringr::str_remove_all(file1,"_R1.fastq|_R1.fastq.gz|_R1.fq|_R1.fq.gz")
     out.file <- paste0(outf,"_Rsubread_alignment.bam")
   }else{
-    if(stringr::str_detect(file1, "_1.fastq")){
-      file2 <- stringr::str_replace(file1,"_1.fastq","_2.fastq")
-      outf <- stringr::str_remove_all(file1,"_1.fastq|_1.fastq.gz")
+    if(stringr::str_detect(file1, "_1.fastq|_1.fq")){
+      file2 <- stringr::str_replace(file1,"_1.f","_2.f")
+      outf <- stringr::str_remove_all(file1,"_1.fastq|_1.fastq.gz|_1.fq|_1.fq.gz")
       out.file <- paste0(outf,"_Rsubread_alignment.bam")
     }else{
-      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_1.fastq/.gz")
+      stop("unrecognizable file, it should be sbj_R1.fastq/.gz or sbj_R1.fq/.gz or sbj_1.fastq/.gz or sbj_1.fq/.gz")
     }
   }
   
