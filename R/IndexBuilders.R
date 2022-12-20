@@ -9,7 +9,7 @@ UpdateSTARindex <- function(){
     if(is.null(software$Software$STAR$main)){
     stop("STAR not installed")
     }
-  cat("\nBuilding STAR 2.7.6a - ARRIBA Genome Index...This may take some time")
+  cat("\nBuilding STAR 2.7.10b - ARRIBA Genome Index...This may take some time")
   thr <- ifelse(parallel::detectCores() > 3, parallel::detectCores()-1, parallel::detectCores())
   cat(paste0("\nRunning STAR genomeGenerate with ",thr," CPU cores"))
   for(sp in species){

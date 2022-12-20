@@ -8,17 +8,27 @@ InstallAligners <- function(){
     stop("Pls you should install GenomeDB package")
   }
   software <- GenomeDB:::.OpenConfigFile()
+  
   if(length(software)<1){
     stop("\nPlease install GenomeDB package See https://github.com/elmerfer/GenomeDB")
   }
+  
   if(is.null(software$Software$main)){
     software$Software$main <- file.path(software$main,"Softwares")
     stopifnot(dir.create(software$Software$main))
+  }
+  
+  if(c("STAR" %in% names(software$Software))==FALSE){
     software$Software$STAR$main <-  file.path(software$Software$main,"STAR")#to install software versions and index files
     stopifnot(dir.create(software$Software$STAR$main))
-    software$Software$Rsubread$main <-  file.path(software$Software$main,"Rsubread")  #to install index files
-    stopifnot(dir.create(software$Software$Rsubread$main))
+
   }
+  
+  if(c("Rsubread" %in% names(software$Software))==FALSE){
+  software$Software$Rsubread$main <-  file.path(software$Software$main,"Rsubread")  #to install index files
+  stopifnot(dir.create(software$Software$Rsubread$main))
+  }
+  # 
   if(require("Rsubread")==FALSE){
     message("\nInstalling Rsubread")
     if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -27,9 +37,9 @@ InstallAligners <- function(){
     BiocManager::install("Rsubread")
   }
 
-  cat("\nDownloading the STAR aligner software version 2.7.6a compatible with Arriba version 2.0.1")
+  cat("\nDownloading the STAR aligner software version 2.7.10b compatible with Arriba version 2.3.0")
   tmp.destfile <- tempfile()
-  download.file(url = "https://github.com/alexdobin/STAR/archive/2.7.6a.tar.gz",
+  download.file(url = "https://github.com/alexdobin/STAR/archive/2.7.10b.tar.gz",
                 method = "wget",
                 destfile = tmp.destfile, extra = "--quiet")
 
@@ -39,7 +49,7 @@ InstallAligners <- function(){
   str.comp <- which(unlist(stringr::str_split(star.f[stringr::str_detect(star.f, "static")][2],"/") )=="STAR")-1
 
   software$Software$STAR$command <- file.path(software$Software$STAR$main,"STAR")
-  software$Software$STAR$version <- "2.7.6a"
+  software$Software$STAR$version <- "2.7.10b"
 
   untar(tarfile = tmp.destfile,
         files = star.f[stringr::str_detect(star.f, "static")][-1],
@@ -48,12 +58,12 @@ InstallAligners <- function(){
   file.remove(tmp.destfile)
 
   if(file.exists(software$Software$STAR$command)){
-    cat("\nSTAR 2.7.6a installed")
+    cat("\nSTAR 2.7.10b installed")
   }
   system2(command = software$Software$STAR$command)
 
   software$Software$STAR$alignmentPrefix <- "_STAR_Aligned_"
-  software$Software$STAR$alignmentPrefixSorted <- "_STAR_AlignedSortedByCoordinates_"
+  software$Software$STAR$alignmentPrefixSorted <- "_STAR_Aligned_SortedByCoordinates"
 
   GenomeDB:::.OpenConfigFile(config = software)
 }
