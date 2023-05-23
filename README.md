@@ -14,7 +14,7 @@ install_github("elmerfer/Aligners")
 
 ## Authors
 
-* **Elmer A. Fernández** - *Idea* - Centro de Investigación y Desarrollo en Inmunología y Enfermedades Infecciosas (CIDIE) - Univ. Católica de Córdoba - CONICET, Argentina 
+* **Elmer A. Fernández** - *Idea* - Fundación para el Progreso de la Medicina - CONICET, Córdoba - Argentina 
 
 ## License
 
